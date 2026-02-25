@@ -1,0 +1,27 @@
+# Claude Code
+.claude/
+
+# Documentation & notes
+docs/
+notes/
+
+# Requirements doc
+polymarket-go-cli-requirements.docx
+
+# Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+polymarket-cli
+bin/
+
+# Go test/build artifacts
+*.test
+*.out
+*.prof
+
+# OS files
+.DS_Store
+Thumbs.db
