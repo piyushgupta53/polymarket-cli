@@ -84,9 +84,10 @@ func PrintActivityTable(activities []data.Activity) {
 
 	for i, a := range activities {
 		side := a.Side
-		if side == "BUY" {
+		switch side {
+		case "BUY":
 			side = GreenStyle.Render(side)
-		} else if side == "SELL" {
+		case "SELL":
 			side = RedStyle.Render(side)
 		}
 

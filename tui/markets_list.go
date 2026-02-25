@@ -146,7 +146,7 @@ func (d marketDelegate) Render(w io.Writer, m list.Model, index int, item list.I
 		line3 = bgStyle.Render(line3)
 	}
 
-	fmt.Fprintf(w, "%s\n%s\n%s", line1, line2, line3)
+	_, _ = fmt.Fprintf(w, "%s\n%s\n%s", line1, line2, line3)
 }
 
 // tabBarHeight is the number of lines occupied by the category tab bar + separator.

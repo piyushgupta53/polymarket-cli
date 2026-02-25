@@ -142,13 +142,7 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return a, nil
 
 	case replaceScreenMsg:
-		screen := a.constructScreen(pushScreenMsg{
-			screen:   msg.screen,
-			marketID: msg.marketID,
-			tokenID:  msg.tokenID,
-			question: msg.question,
-			deriveFn: msg.deriveFn,
-		})
+		screen := a.constructScreen(pushScreenMsg(msg))
 		if screen == nil {
 			return a, nil
 		}

@@ -38,11 +38,11 @@ func TestPrintError_JSON(t *testing.T) {
 	}
 	PrintError(cliErr, true)
 
-	w.Close()
+	_ = w.Close()
 	os.Stderr = old
 
 	var buf bytes.Buffer
-	buf.ReadFrom(r)
+	_, _ = buf.ReadFrom(r)
 	output := strings.TrimSpace(buf.String())
 
 	var parsed map[string]map[string]string
@@ -74,11 +74,11 @@ func TestPrintError_Table(t *testing.T) {
 	}
 	PrintError(cliErr, false)
 
-	w.Close()
+	_ = w.Close()
 	os.Stderr = old
 
 	var buf bytes.Buffer
-	buf.ReadFrom(r)
+	_, _ = buf.ReadFrom(r)
 	output := buf.String()
 
 	if !strings.Contains(output, "not found: market xyz") {
@@ -96,11 +96,11 @@ func TestPrintError_PlainError_JSON(t *testing.T) {
 
 	PrintError(fmt.Errorf("something broke"), true)
 
-	w.Close()
+	_ = w.Close()
 	os.Stderr = old
 
 	var buf bytes.Buffer
-	buf.ReadFrom(r)
+	_, _ = buf.ReadFrom(r)
 	output := strings.TrimSpace(buf.String())
 
 	var parsed map[string]map[string]string
@@ -120,11 +120,11 @@ func TestPrintError_Nil(t *testing.T) {
 
 	PrintError(nil, true)
 
-	w.Close()
+	_ = w.Close()
 	os.Stderr = old
 
 	var buf bytes.Buffer
-	buf.ReadFrom(r)
+	_, _ = buf.ReadFrom(r)
 	if buf.Len() > 0 {
 		t.Error("nil error should produce no output")
 	}

@@ -45,7 +45,7 @@ func init() {
 	bridgeCmd.AddCommand(bridgeStatusCmd)
 
 	bridgeStatusCmd.Flags().StringVar(&bridgeStatusTxHash, "tx", "", "Transaction hash to check")
-	bridgeStatusCmd.MarkFlagRequired("tx")
+	_ = bridgeStatusCmd.MarkFlagRequired("tx")
 }
 
 func newBridgeClient() *bridge.BridgeClient {

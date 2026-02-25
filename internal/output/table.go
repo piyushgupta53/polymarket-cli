@@ -209,15 +209,15 @@ func printTable(headers []string, rows [][]string) {
 		t.Row(row...)
 	}
 
-	fmt.Fprintln(os.Stdout, t.Render())
+	_, _ = fmt.Fprintln(os.Stdout, t.Render())
 }
 
 // printTSV writes tab-separated values to stdout.
 func printTSV(headers []string, rows [][]string) {
 	if !optNoHeaders {
-		fmt.Fprintln(os.Stdout, strings.Join(headers, "\t"))
+		_, _ = fmt.Fprintln(os.Stdout, strings.Join(headers, "\t"))
 	}
 	for _, row := range rows {
-		fmt.Fprintln(os.Stdout, strings.Join(row, "\t"))
+		_, _ = fmt.Fprintln(os.Stdout, strings.Join(row, "\t"))
 	}
 }

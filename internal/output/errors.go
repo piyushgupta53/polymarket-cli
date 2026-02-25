@@ -73,15 +73,15 @@ func PrintError(err error, jsonMode bool) {
 		envelope := map[string]any{"error": errObj}
 		data, merr := json.Marshal(envelope)
 		if merr != nil {
-			fmt.Fprintf(os.Stderr, `{"error":{"code":%q,"message":%q}}`+"\n", cliErr.Code, cliErr.Message)
+			_, _ = fmt.Fprintf(os.Stderr, `{"error":{"code":%q,"message":%q}}`+"\n", cliErr.Code, cliErr.Message)
 			return
 		}
-		fmt.Fprintln(os.Stderr, string(data))
+		_, _ = fmt.Fprintln(os.Stderr, string(data))
 	} else {
 		if cliErr.Hint != "" {
-			fmt.Fprintf(os.Stderr, "Error: %s\nHint: %s\n", cliErr.Message, cliErr.Hint)
+			_, _ = fmt.Fprintf(os.Stderr, "Error: %s\nHint: %s\n", cliErr.Message, cliErr.Hint)
 		} else {
-			fmt.Fprintf(os.Stderr, "Error: %s\n", cliErr.Message)
+			_, _ = fmt.Fprintf(os.Stderr, "Error: %s\n", cliErr.Message)
 		}
 	}
 }

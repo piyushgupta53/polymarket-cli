@@ -48,7 +48,7 @@ func TestDeriveAPIKey(t *testing.T) {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(expectedCreds)
+		_ = json.NewEncoder(w).Encode(expectedCreds)
 	}))
 	defer server.Close()
 
@@ -76,7 +76,7 @@ func TestDeriveAPIKey(t *testing.T) {
 func TestDeriveAPIKey_ServerError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("forbidden"))
+		_, _ = w.Write([]byte("forbidden"))
 	}))
 	defer server.Close()
 
@@ -118,7 +118,7 @@ func TestCreateAPIKey(t *testing.T) {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(expectedCreds)
+		_ = json.NewEncoder(w).Encode(expectedCreds)
 	}))
 	defer server.Close()
 

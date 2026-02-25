@@ -61,5 +61,5 @@ func PrintBalanceTable(rows [][]string) {
 		t.Row(row...)
 	}
 
-	fmt.Fprintln(os.Stdout, t.Render())
+	_, _ = fmt.Fprintln(os.Stdout, t.Render())
 }

@@ -19,7 +19,7 @@ func PrintJSON(v any) error {
 	if err != nil {
 		return fmt.Errorf("marshaling JSON: %w", err)
 	}
-	fmt.Fprintln(os.Stdout, string(data))
+	_, _ = fmt.Fprintln(os.Stdout, string(data))
 	return nil
 }
 
@@ -28,7 +28,7 @@ func PrintRawJSON(data json.RawMessage) error {
 	var v any
 	if err := json.Unmarshal(data, &v); err != nil {
 		// If we can't parse it, print raw
-		fmt.Fprintln(os.Stdout, string(data))
+		_, _ = fmt.Fprintln(os.Stdout, string(data))
 		return nil
 	}
 	return PrintJSON(v)

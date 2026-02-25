@@ -10,8 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-const usdcDecimals = 6
-
 // USDCToRaw converts a USDC amount (e.g., 10.5) to raw units (10500000).
 func USDCToRaw(amount float64) *big.Int {
 	// Multiply by 10^6, using integer math to avoid float precision issues

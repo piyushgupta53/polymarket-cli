@@ -22,7 +22,7 @@ func TestDataClientGetPositions(t *testing.T) {
 		if r.URL.Query().Get("address") != "0xABC" {
 			t.Errorf("unexpected address param: %s", r.URL.Query().Get("address"))
 		}
-		json.NewEncoder(w).Encode(positions)
+		_ = json.NewEncoder(w).Encode(positions)
 	}))
 	defer server.Close()
 
@@ -56,7 +56,7 @@ func TestDataClientGetClosedPositions(t *testing.T) {
 		if r.URL.Query().Get("address") != "0xDEF" {
 			t.Errorf("unexpected address param: %s", r.URL.Query().Get("address"))
 		}
-		json.NewEncoder(w).Encode(positions)
+		_ = json.NewEncoder(w).Encode(positions)
 	}))
 	defer server.Close()
 
@@ -85,7 +85,7 @@ func TestDataClientGetPortfolioValue(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(values)
+		_ = json.NewEncoder(w).Encode(values)
 	}))
 	defer server.Close()
 
@@ -109,7 +109,7 @@ func TestDataClientGetPortfolioTraded(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		w.Write([]byte(`{"totalTraded": 50000}`))
+		_, _ = w.Write([]byte(`{"totalTraded": 50000}`))
 	}))
 	defer server.Close()
 
@@ -137,7 +137,7 @@ func TestDataClientGetActivity(t *testing.T) {
 		if r.URL.Query().Get("limit") != "50" {
 			t.Errorf("unexpected limit: %s", r.URL.Query().Get("limit"))
 		}
-		json.NewEncoder(w).Encode(activities)
+		_ = json.NewEncoder(w).Encode(activities)
 	}))
 	defer server.Close()
 
@@ -172,7 +172,7 @@ func TestDataClientGetTrades(t *testing.T) {
 		if r.URL.Query().Get("offset") != "10" {
 			t.Errorf("unexpected offset: %s", r.URL.Query().Get("offset"))
 		}
-		json.NewEncoder(w).Encode(trades)
+		_ = json.NewEncoder(w).Encode(trades)
 	}))
 	defer server.Close()
 
@@ -204,7 +204,7 @@ func TestDataClientGetHolders(t *testing.T) {
 		if r.URL.Query().Get("conditionId") != "cond1" {
 			t.Errorf("unexpected conditionId: %s", r.URL.Query().Get("conditionId"))
 		}
-		json.NewEncoder(w).Encode(holders)
+		_ = json.NewEncoder(w).Encode(holders)
 	}))
 	defer server.Close()
 
@@ -230,7 +230,7 @@ func TestDataClientGetOpenInterest(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(oi)
+		_ = json.NewEncoder(w).Encode(oi)
 	}))
 	defer server.Close()
 
@@ -256,7 +256,7 @@ func TestDataClientGetEventVolume(t *testing.T) {
 		if r.URL.Query().Get("eventId") != "ev1" {
 			t.Errorf("unexpected eventId: %s", r.URL.Query().Get("eventId"))
 		}
-		json.NewEncoder(w).Encode(vol)
+		_ = json.NewEncoder(w).Encode(vol)
 	}))
 	defer server.Close()
 
@@ -285,7 +285,7 @@ func TestDataClientGetLeaderboard(t *testing.T) {
 		if r.URL.Query().Get("limit") != "10" {
 			t.Errorf("unexpected limit: %s", r.URL.Query().Get("limit"))
 		}
-		json.NewEncoder(w).Encode(entries)
+		_ = json.NewEncoder(w).Encode(entries)
 	}))
 	defer server.Close()
 
@@ -309,7 +309,7 @@ func TestDataClientGetBuilderLeaderboard(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		w.Write([]byte(`[{"builder":"app1","volume":100000}]`))
+		_, _ = w.Write([]byte(`[{"builder":"app1","volume":100000}]`))
 	}))
 	defer server.Close()
 
@@ -330,7 +330,7 @@ func TestDataClientGetBuilderVolume(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		w.Write([]byte(`{"totalVolume":999999}`))
+		_, _ = w.Write([]byte(`{"totalVolume":999999}`))
 	}))
 	defer server.Close()
 
@@ -347,7 +347,7 @@ func TestDataClientGetBuilderVolume(t *testing.T) {
 func TestDataClientErrorHandling(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error": "internal error"}`))
+		_, _ = w.Write([]byte(`{"error": "internal error"}`))
 	}))
 	defer server.Close()
 

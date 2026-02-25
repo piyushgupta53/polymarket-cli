@@ -109,7 +109,7 @@ func runUpgrade(cmd *cobra.Command, args []string) error {
 		}
 		fmt.Printf("\nDownload %s? This will replace the current binary. [y/N] ", assetName)
 		var answer string
-		fmt.Scanln(&answer)
+		_, _ = fmt.Scanln(&answer)
 		if strings.ToLower(answer) != "y" {
 			fmt.Println("Upgrade cancelled.")
 			return nil
@@ -134,7 +134,7 @@ func fetchLatestRelease() (*githubRelease, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("GitHub API returned %d", resp.StatusCode)
@@ -164,7 +164,7 @@ func downloadAndReplace(url string) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("download failed (status %d)", resp.StatusCode)
@@ -186,13 +186,13 @@ func downloadAndReplace(url string) error {
 	if err != nil {
 		return fmt.Errorf("creating temp file: %w", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	defer func() { _ = os.Remove(tmpFile.Name()) }()
 
 	if _, err := io.Copy(tmpFile, resp.Body); err != nil {
-		tmpFile.Close()
+		_ = tmpFile.Close()
 		return fmt.Errorf("writing binary: %w", err)
 	}
-	tmpFile.Close()
+	_ = tmpFile.Close()
 
 	// Make executable
 	if err := os.Chmod(tmpFile.Name(), 0755); err != nil {
@@ -208,12 +208,12 @@ func downloadAndReplace(url string) error {
 	// Move new binary into place
 	if err := os.Rename(tmpFile.Name(), execPath); err != nil {
 		// Try to restore backup
-		os.Rename(backupPath, execPath)
+		_ = os.Rename(backupPath, execPath)
 		return fmt.Errorf("replacing binary: %w", err)
 	}
 
 	// Remove backup
-	os.Remove(backupPath)
+	_ = os.Remove(backupPath)
 
 	return nil
 }

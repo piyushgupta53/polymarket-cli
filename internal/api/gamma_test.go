@@ -21,7 +21,7 @@ func TestGammaClientGetMarket(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(market)
+		_ = json.NewEncoder(w).Encode(market)
 	}))
 	defer server.Close()
 
@@ -52,7 +52,7 @@ func TestGammaClientGetMarketBySlug(t *testing.T) {
 		if r.URL.Query().Get("slug") != "test-market" {
 			t.Errorf("unexpected slug param: %s", r.URL.Query().Get("slug"))
 		}
-		json.NewEncoder(w).Encode(markets)
+		_ = json.NewEncoder(w).Encode(markets)
 	}))
 	defer server.Close()
 
@@ -76,7 +76,7 @@ func TestGammaClientListMarkets(t *testing.T) {
 		if r.URL.Query().Get("limit") != "10" {
 			t.Errorf("unexpected limit: %s", r.URL.Query().Get("limit"))
 		}
-		json.NewEncoder(w).Encode(markets)
+		_ = json.NewEncoder(w).Encode(markets)
 	}))
 	defer server.Close()
 
@@ -103,7 +103,7 @@ func TestGammaClientGetEvent(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(event)
+		_ = json.NewEncoder(w).Encode(event)
 	}))
 	defer server.Close()
 
@@ -129,7 +129,7 @@ func TestGammaClientListTags(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(tags)
+		_ = json.NewEncoder(w).Encode(tags)
 	}))
 	defer server.Close()
 
@@ -145,7 +145,7 @@ func TestGammaClientListTags(t *testing.T) {
 
 func TestGammaClientPing(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode([]Market{})
+		_ = json.NewEncoder(w).Encode([]Market{})
 	}))
 	defer server.Close()
 
@@ -158,7 +158,7 @@ func TestGammaClientPing(t *testing.T) {
 func TestGammaClientErrorHandling(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error": "internal error"}`))
+		_, _ = w.Write([]byte(`{"error": "internal error"}`))
 	}))
 	defer server.Close()
 
@@ -171,7 +171,7 @@ func TestGammaClientErrorHandling(t *testing.T) {
 
 func TestGammaClientSlugNotFound(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode([]Market{})
+		_ = json.NewEncoder(w).Encode([]Market{})
 	}))
 	defer server.Close()
 
@@ -197,7 +197,7 @@ func TestGammaClientListSeries(t *testing.T) {
 		if r.URL.Query().Get("limit") != "10" {
 			t.Errorf("unexpected limit: %s", r.URL.Query().Get("limit"))
 		}
-		json.NewEncoder(w).Encode(series)
+		_ = json.NewEncoder(w).Encode(series)
 	}))
 	defer server.Close()
 
@@ -227,7 +227,7 @@ func TestGammaClientGetSeries(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(series)
+		_ = json.NewEncoder(w).Encode(series)
 	}))
 	defer server.Close()
 
@@ -258,7 +258,7 @@ func TestGammaClientListComments(t *testing.T) {
 		if r.URL.Query().Get("entity_id") != "e1" {
 			t.Errorf("unexpected entity_id: %s", r.URL.Query().Get("entity_id"))
 		}
-		json.NewEncoder(w).Encode(comments)
+		_ = json.NewEncoder(w).Encode(comments)
 	}))
 	defer server.Close()
 
@@ -288,7 +288,7 @@ func TestGammaClientGetComment(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(comment)
+		_ = json.NewEncoder(w).Encode(comment)
 	}))
 	defer server.Close()
 
@@ -314,7 +314,7 @@ func TestGammaClientGetUserComments(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(comments)
+		_ = json.NewEncoder(w).Encode(comments)
 	}))
 	defer server.Close()
 
@@ -341,7 +341,7 @@ func TestGammaClientGetProfile(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(profile)
+		_ = json.NewEncoder(w).Encode(profile)
 	}))
 	defer server.Close()
 
@@ -370,7 +370,7 @@ func TestGammaClientListSports(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(sports)
+		_ = json.NewEncoder(w).Encode(sports)
 	}))
 	defer server.Close()
 
@@ -399,7 +399,7 @@ func TestGammaClientGetMarketTypes(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(types)
+		_ = json.NewEncoder(w).Encode(types)
 	}))
 	defer server.Close()
 
@@ -434,7 +434,7 @@ func TestGammaClientListTeams(t *testing.T) {
 		if r.URL.Query().Get("limit") != "25" {
 			t.Errorf("unexpected limit: %s", r.URL.Query().Get("limit"))
 		}
-		json.NewEncoder(w).Encode(teams)
+		_ = json.NewEncoder(w).Encode(teams)
 	}))
 	defer server.Close()
 

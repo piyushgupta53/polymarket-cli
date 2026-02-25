@@ -31,7 +31,7 @@ func BuildHMACSignature(secret, timestamp, method, path, body string) (string, e
 
 	message := timestamp + method + path + body
 	mac := hmac.New(sha256.New, secretBytes)
-	mac.Write([]byte(message))
+	_, _ = mac.Write([]byte(message))
 	sig := base64.URLEncoding.EncodeToString(mac.Sum(nil))
 
 	return sig, nil
@@ -85,7 +85,7 @@ func (c *Client) doAuthRequest(method, path string, body []byte) ([]byte, error)
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {

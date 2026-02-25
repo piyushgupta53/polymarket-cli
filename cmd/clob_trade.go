@@ -321,30 +321,30 @@ var clobUpdateBalanceCmd = &cobra.Command{
 func init() {
 	// Create order
 	clobCreateOrderCmd.Flags().StringVar(&tradeTokenFlag, "token", "", "Token ID (required)")
-	clobCreateOrderCmd.MarkFlagRequired("token")
+	_ = clobCreateOrderCmd.MarkFlagRequired("token")
 	clobCreateOrderCmd.Flags().StringVar(&tradeSideFlag, "side", "", "Side: BUY or SELL (required)")
-	clobCreateOrderCmd.MarkFlagRequired("side")
+	_ = clobCreateOrderCmd.MarkFlagRequired("side")
 	clobCreateOrderCmd.Flags().StringVar(&tradePriceFlag, "price", "", "Limit price (required)")
-	clobCreateOrderCmd.MarkFlagRequired("price")
+	_ = clobCreateOrderCmd.MarkFlagRequired("price")
 	clobCreateOrderCmd.Flags().StringVar(&tradeSizeFlag, "size", "", "Order size (required)")
-	clobCreateOrderCmd.MarkFlagRequired("size")
+	_ = clobCreateOrderCmd.MarkFlagRequired("size")
 	clobCreateOrderCmd.Flags().StringVar(&tradeTypeFlag, "type", "GTC", "Order type (GTC, GTD, FOK)")
 	clobCreateOrderCmd.Flags().StringVar(&tradeExpirationFlag, "expiration", "0", "Expiration timestamp")
 	clobCmd.AddCommand(clobCreateOrderCmd)
 
 	// Cancel single
 	clobCancelCmd.Flags().StringVar(&tradeOrderIDFlag, "order-id", "", "Order ID (required)")
-	clobCancelCmd.MarkFlagRequired("order-id")
+	_ = clobCancelCmd.MarkFlagRequired("order-id")
 	clobCmd.AddCommand(clobCancelCmd)
 
 	// Cancel multiple
 	clobCancelOrdersCmd.Flags().StringVar(&tradeOrderIDsFlag, "order-ids", "", "Comma-separated order IDs (required)")
-	clobCancelOrdersCmd.MarkFlagRequired("order-ids")
+	_ = clobCancelOrdersCmd.MarkFlagRequired("order-ids")
 	clobCmd.AddCommand(clobCancelOrdersCmd)
 
 	// Cancel market
 	clobCancelMarketCmd.Flags().StringVar(&tradeMarketFlag, "condition", "", "Condition ID (required)")
-	clobCancelMarketCmd.MarkFlagRequired("condition")
+	_ = clobCancelMarketCmd.MarkFlagRequired("condition")
 	clobCmd.AddCommand(clobCancelMarketCmd)
 
 	// Cancel all
@@ -358,7 +358,7 @@ func init() {
 
 	// Single order
 	clobOrderCmd.Flags().StringVar(&tradeOrderIDFlag, "id", "", "Order ID (required)")
-	clobOrderCmd.MarkFlagRequired("id")
+	_ = clobOrderCmd.MarkFlagRequired("id")
 	clobCmd.AddCommand(clobOrderCmd)
 
 	// Trades

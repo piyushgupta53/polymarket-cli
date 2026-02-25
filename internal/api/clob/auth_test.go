@@ -25,7 +25,7 @@ func TestBuildHMACSignature(t *testing.T) {
 	// Verify manually
 	message := timestamp + method + path + body
 	mac := hmac.New(sha256.New, []byte("test-secret"))
-	mac.Write([]byte(message))
+	_, _ = mac.Write([]byte(message))
 	expected := base64.URLEncoding.EncodeToString(mac.Sum(nil))
 
 	if sig != expected {
@@ -107,7 +107,7 @@ func TestDoAuthRequest_Success(t *testing.T) {
 			t.Error("missing POLY_PASSPHRASE")
 		}
 
-		w.Write([]byte(`{"ok":true}`))
+		_, _ = w.Write([]byte(`{"ok":true}`))
 	}))
 	defer server.Close()
 
@@ -134,7 +134,7 @@ func TestDoAuthRequest_Success(t *testing.T) {
 func TestDoAuthRequest_ServerError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("forbidden"))
+		_, _ = w.Write([]byte("forbidden"))
 	}))
 	defer server.Close()
 

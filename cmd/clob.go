@@ -426,7 +426,7 @@ func init() {
 	// Single token commands
 	for _, cmd := range []*cobra.Command{clobPriceCmd, clobMidpointCmd, clobSpreadCmd, clobBookCmd, clobLastTradeCmd, clobTickSizeCmd, clobFeeRateCmd, clobNegRiskCmd, clobPriceHistoryCmd} {
 		cmd.Flags().StringVar(&clobTokenFlag, "token", "", "Token ID (required)")
-		cmd.MarkFlagRequired("token")
+		_ = cmd.MarkFlagRequired("token")
 		clobCmd.AddCommand(cmd)
 	}
 
@@ -440,14 +440,14 @@ func init() {
 	// Batch commands
 	for _, cmd := range []*cobra.Command{clobBatchPricesCmd, clobMidpointsCmd, clobSpreadsCmd, clobBooksCmd, clobLastTradesCmd} {
 		cmd.Flags().StringVar(&clobTokensFlag, "tokens", "", "Comma-separated token IDs (required)")
-		cmd.MarkFlagRequired("tokens")
+		_ = cmd.MarkFlagRequired("tokens")
 		clobCmd.AddCommand(cmd)
 	}
 	clobBatchPricesCmd.Flags().StringVar(&clobSideFlag, "side", "buy", "Side (buy or sell)")
 
 	// Market commands
 	clobMarketCmd.Flags().StringVar(&clobConditionFlag, "condition", "", "Condition ID (required)")
-	clobMarketCmd.MarkFlagRequired("condition")
+	_ = clobMarketCmd.MarkFlagRequired("condition")
 	clobCmd.AddCommand(clobMarketCmd)
 
 	clobMarketsCmd.Flags().StringVar(&clobCursorFlag, "cursor", "", "Pagination cursor")

@@ -48,8 +48,7 @@ func TestNonInteractiveEnvVar(t *testing.T) {
 	nonInteractive = false
 	defer func() { nonInteractive = old }()
 
-	os.Setenv("POLYMARKET_NON_INTERACTIVE", "1")
-	defer os.Unsetenv("POLYMARKET_NON_INTERACTIVE")
+	t.Setenv("POLYMARKET_NON_INTERACTIVE", "1")
 
 	// Simulate what PersistentPreRun does
 	if os.Getenv("POLYMARKET_NON_INTERACTIVE") == "1" {

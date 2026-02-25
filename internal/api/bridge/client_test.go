@@ -23,7 +23,7 @@ func TestBridgeClientGetDepositAddresses(t *testing.T) {
 		if r.Method != http.MethodGet {
 			t.Errorf("unexpected method: %s", r.Method)
 		}
-		json.NewEncoder(w).Encode(addrs)
+		_ = json.NewEncoder(w).Encode(addrs)
 	}))
 	defer server.Close()
 
@@ -56,7 +56,7 @@ func TestBridgeClientGetSupportedAssets(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		json.NewEncoder(w).Encode(assets)
+		_ = json.NewEncoder(w).Encode(assets)
 	}))
 	defer server.Close()
 
@@ -96,7 +96,7 @@ func TestBridgeClientGetDepositStatus(t *testing.T) {
 		if r.URL.Query().Get("txHash") != "0xabc123" {
 			t.Errorf("unexpected txHash param: %s", r.URL.Query().Get("txHash"))
 		}
-		json.NewEncoder(w).Encode(status)
+		_ = json.NewEncoder(w).Encode(status)
 	}))
 	defer server.Close()
 
@@ -122,7 +122,7 @@ func TestBridgeClientGetDepositStatus(t *testing.T) {
 func TestBridgeClientErrorHandling(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error": "internal error"}`))
+		_, _ = w.Write([]byte(`{"error": "internal error"}`))
 	}))
 	defer server.Close()
 
@@ -154,7 +154,7 @@ func TestBridgeClientGetDepositStatusEmptyOptionalFields(t *testing.T) {
 	}
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(status)
+		_ = json.NewEncoder(w).Encode(status)
 	}))
 	defer server.Close()
 

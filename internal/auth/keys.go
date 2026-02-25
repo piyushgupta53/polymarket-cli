@@ -51,7 +51,7 @@ func DeriveAPIKey(baseURL string, privateKey *ecdsa.PrivateKey, chainID, sigType
 	if err != nil {
 		return nil, fmt.Errorf("derive-api-key request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -100,7 +100,7 @@ func CreateAPIKey(baseURL string, privateKey *ecdsa.PrivateKey, chainID int) (*A
 	if err != nil {
 		return nil, fmt.Errorf("create-api-key request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

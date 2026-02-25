@@ -218,7 +218,7 @@ func init() {
 	walletCmd.AddCommand(walletCreateCmd)
 
 	walletImportCmd.Flags().StringVar(&walletPKFlag, "private-key", "", "Private key in hex (required)")
-	walletImportCmd.MarkFlagRequired("private-key")
+	_ = walletImportCmd.MarkFlagRequired("private-key")
 	walletImportCmd.Flags().StringVar(&walletSigTypeFlag, "signature-type", "", "Signature type (EOA, POLY_PROXY, POLY_GNOSIS_SAFE)")
 	walletCmd.AddCommand(walletImportCmd)
 

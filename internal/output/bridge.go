@@ -68,7 +68,7 @@ func PrintSupportedAssetsTable(assets []bridge.SupportedAsset) {
 		t.Row(row...)
 	}
 
-	fmt.Fprintln(os.Stdout, t.Render())
+	_, _ = fmt.Fprintln(os.Stdout, t.Render())
 }
 
 // PrintDepositStatus prints deposit status as styled key-value pairs.

@@ -127,7 +127,7 @@ func init() {
 	clobCmd.AddCommand(clobCreateAPIKeyCmd)
 
 	clobDeleteAPIKeyCmd.Flags().StringVar(&deleteAPIKeyFlag, "key", "", "API key to delete (required)")
-	clobDeleteAPIKeyCmd.MarkFlagRequired("key")
+	_ = clobDeleteAPIKeyCmd.MarkFlagRequired("key")
 	clobCmd.AddCommand(clobDeleteAPIKeyCmd)
 
 	clobCmd.AddCommand(clobNotificationsCmd)

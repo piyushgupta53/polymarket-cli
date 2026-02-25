@@ -112,7 +112,7 @@ func printOrderBookSide(entries []clob.OrderBookEntry, isBid bool) {
 		t.Row(r.price, r.size, r.total)
 	}
 
-	fmt.Fprintln(os.Stdout, t.Render())
+	_, _ = fmt.Fprintln(os.Stdout, t.Render())
 }
 
 // PrintClobMarketsTable prints a table of CLOB markets.
@@ -152,7 +152,7 @@ func PrintClobMarketsTable(markets []clob.ClobMarket) {
 		t.Row(row...)
 	}
 
-	fmt.Fprintln(os.Stdout, t.Render())
+	_, _ = fmt.Fprintln(os.Stdout, t.Render())
 }
 
 // PrintClobMarketDetail prints detailed info about a single CLOB market.
@@ -232,7 +232,7 @@ func PrintPriceHistory(history []clob.PriceHistoryPoint) {
 		t.Row(row...)
 	}
 
-	fmt.Fprintln(os.Stdout, t.Render())
+	_, _ = fmt.Fprintln(os.Stdout, t.Render())
 }
 
 // PrintBatchPrices prints batch price results.
@@ -288,7 +288,7 @@ func printClobTable(headers []string, rows [][]string) {
 		t.Row(row...)
 	}
 
-	fmt.Fprintln(os.Stdout, t.Render())
+	_, _ = fmt.Fprintln(os.Stdout, t.Render())
 }
 
 // PrintOrder prints a single order's details.
@@ -366,7 +366,7 @@ func PrintOrdersTable(orders []clob.Order) {
 		t.Row(row...)
 	}
 
-	fmt.Fprintln(os.Stdout, t.Render())
+	_, _ = fmt.Fprintln(os.Stdout, t.Render())
 }
 
 // PrintTradesTable prints a table of trades.
@@ -413,7 +413,7 @@ func PrintTradesTable(trades []clob.Trade) {
 		t.Row(row...)
 	}
 
-	fmt.Fprintln(os.Stdout, t.Render())
+	_, _ = fmt.Fprintln(os.Stdout, t.Render())
 }
 
 // PrintBalance prints balance and allowance info.

@@ -377,7 +377,7 @@ func scheduleRefresh() tea.Cmd {
 
 func parseFloat(s string) float64 {
 	var f float64
-	fmt.Sscanf(strings.TrimSpace(s), "%f", &f)
+	_, _ = fmt.Sscanf(strings.TrimSpace(s), "%f", &f)
 	return f
 }
 

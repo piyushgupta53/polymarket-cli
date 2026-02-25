@@ -12,18 +12,14 @@ import (
 
 // Package-level output options set by cmd/root.go PersistentPreRun.
 var (
-	optQuiet      bool
-	optNoHeaders  bool
-	optNoColor    bool
-	optTSV        bool
+	optNoHeaders   bool
+	optTSV         bool
 	optCompactJSON bool
 )
 
 // SetOutputOptions configures package-level output behavior.
-func SetOutputOptions(quiet, noHeaders, noColor, tsv, compactJSON bool) {
-	optQuiet = quiet
+func SetOutputOptions(_, noHeaders, _, tsv, compactJSON bool) {
 	optNoHeaders = noHeaders
-	optNoColor = noColor
 	optTSV = tsv
 	optCompactJSON = compactJSON
 }

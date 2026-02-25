@@ -133,14 +133,14 @@ func init() {
 	clobCmd.AddCommand(clobRewardPercentagesCmd)
 
 	clobMarketRewardCmd.Flags().StringVar(&rewardConditionFlag, "condition", "", "Condition ID (required)")
-	clobMarketRewardCmd.MarkFlagRequired("condition")
+	_ = clobMarketRewardCmd.MarkFlagRequired("condition")
 	clobCmd.AddCommand(clobMarketRewardCmd)
 
 	clobOrderScoringCmd.Flags().StringVar(&rewardOrderIDFlag, "order-id", "", "Order ID (required)")
-	clobOrderScoringCmd.MarkFlagRequired("order-id")
+	_ = clobOrderScoringCmd.MarkFlagRequired("order-id")
 	clobCmd.AddCommand(clobOrderScoringCmd)
 
 	clobOrdersScoringCmd.Flags().StringVar(&rewardOrderIDsFlag, "order-ids", "", "Comma-separated order IDs (required)")
-	clobOrdersScoringCmd.MarkFlagRequired("order-ids")
+	_ = clobOrdersScoringCmd.MarkFlagRequired("order-ids")
 	clobCmd.AddCommand(clobOrdersScoringCmd)
 }

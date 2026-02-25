@@ -28,7 +28,7 @@ func TestPostOrder(t *testing.T) {
 		if r.URL.Path != "/order" {
 			t.Errorf("path = %s, want /order", r.URL.Path)
 		}
-		json.NewEncoder(w).Encode(OrderResponse{
+		_ = json.NewEncoder(w).Encode(OrderResponse{
 			Success: true,
 			OrderID: "order-123",
 		})
@@ -62,7 +62,7 @@ func TestCancelOrder(t *testing.T) {
 		if r.Method != "DELETE" {
 			t.Errorf("method = %s, want DELETE", r.Method)
 		}
-		json.NewEncoder(w).Encode(CancelResponse{
+		_ = json.NewEncoder(w).Encode(CancelResponse{
 			Canceled: []string{"order-123"},
 		})
 	}))
@@ -81,7 +81,7 @@ func TestCancelAll(t *testing.T) {
 		if r.URL.Path != "/cancel-all" {
 			t.Errorf("path = %s, want /cancel-all", r.URL.Path)
 		}
-		json.NewEncoder(w).Encode(CancelResponse{
+		_ = json.NewEncoder(w).Encode(CancelResponse{
 			Canceled: []string{"a", "b", "c"},
 		})
 	}))
@@ -100,7 +100,7 @@ func TestGetOrder(t *testing.T) {
 		if r.URL.Path != "/order/abc-123" {
 			t.Errorf("path = %s, want /order/abc-123", r.URL.Path)
 		}
-		json.NewEncoder(w).Encode(Order{
+		_ = json.NewEncoder(w).Encode(Order{
 			ID:     "abc-123",
 			Status: "LIVE",
 			Side:   "BUY",
@@ -129,7 +129,7 @@ func TestGetOpenOrders(t *testing.T) {
 		if r.URL.Query().Get("market") != "cond-123" {
 			t.Errorf("market = %q, want cond-123", r.URL.Query().Get("market"))
 		}
-		json.NewEncoder(w).Encode([]Order{
+		_ = json.NewEncoder(w).Encode([]Order{
 			{ID: "o1", Side: "BUY"},
 			{ID: "o2", Side: "SELL"},
 		})
@@ -149,7 +149,7 @@ func TestGetTrades(t *testing.T) {
 		if r.URL.Path != "/trades" {
 			t.Errorf("path = %s, want /trades", r.URL.Path)
 		}
-		json.NewEncoder(w).Encode([]Trade{
+		_ = json.NewEncoder(w).Encode([]Trade{
 			{ID: "t1", Side: "BUY", Price: "0.55"},
 		})
 	}))
@@ -171,7 +171,7 @@ func TestGetBalanceAllowance(t *testing.T) {
 		if r.URL.Path != "/balance-allowance" {
 			t.Errorf("path = %s, want /balance-allowance", r.URL.Path)
 		}
-		json.NewEncoder(w).Encode(BalanceAllowance{
+		_ = json.NewEncoder(w).Encode(BalanceAllowance{
 			Balance:   "1000.00",
 			Allowance: "5000.00",
 		})
@@ -211,7 +211,7 @@ func TestCancelOrders(t *testing.T) {
 		if r.URL.Path != "/orders" {
 			t.Errorf("path = %s, want /orders", r.URL.Path)
 		}
-		json.NewEncoder(w).Encode(CancelResponse{
+		_ = json.NewEncoder(w).Encode(CancelResponse{
 			Canceled: []string{"o1", "o2"},
 		})
 	}))
@@ -227,7 +227,7 @@ func TestCancelOrders(t *testing.T) {
 
 func TestCancelMarketOrders(t *testing.T) {
 	c := newTestAuthClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(CancelResponse{
+		_ = json.NewEncoder(w).Encode(CancelResponse{
 			Canceled: []string{"o1"},
 		})
 	}))

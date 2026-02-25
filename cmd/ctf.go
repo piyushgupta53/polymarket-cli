@@ -321,41 +321,41 @@ func init() {
 
 	// Transaction commands
 	ctfSplitCmd.Flags().String("condition", "", "Condition ID (hex, required)")
-	ctfSplitCmd.MarkFlagRequired("condition")
+	_ = ctfSplitCmd.MarkFlagRequired("condition")
 	ctfSplitCmd.Flags().Float64("amount", 0, "USDC amount to split (required)")
-	ctfSplitCmd.MarkFlagRequired("amount")
+	_ = ctfSplitCmd.MarkFlagRequired("amount")
 	ctfCmd.AddCommand(ctfSplitCmd)
 
 	ctfMergeCmd.Flags().String("condition", "", "Condition ID (hex, required)")
-	ctfMergeCmd.MarkFlagRequired("condition")
+	_ = ctfMergeCmd.MarkFlagRequired("condition")
 	ctfMergeCmd.Flags().Float64("amount", 0, "Number of shares to merge (required)")
-	ctfMergeCmd.MarkFlagRequired("amount")
+	_ = ctfMergeCmd.MarkFlagRequired("amount")
 	ctfCmd.AddCommand(ctfMergeCmd)
 
 	ctfRedeemCmd.Flags().String("condition", "", "Condition ID (hex, required)")
-	ctfRedeemCmd.MarkFlagRequired("condition")
+	_ = ctfRedeemCmd.MarkFlagRequired("condition")
 	ctfCmd.AddCommand(ctfRedeemCmd)
 
 	ctfRedeemNegRiskCmd.Flags().String("condition", "", "Condition ID (hex, required)")
-	ctfRedeemNegRiskCmd.MarkFlagRequired("condition")
+	_ = ctfRedeemNegRiskCmd.MarkFlagRequired("condition")
 	ctfCmd.AddCommand(ctfRedeemNegRiskCmd)
 
 	// Pure computation commands
 	ctfConditionIDCmd.Flags().String("oracle", "", "Oracle address (hex, required)")
-	ctfConditionIDCmd.MarkFlagRequired("oracle")
+	_ = ctfConditionIDCmd.MarkFlagRequired("oracle")
 	ctfConditionIDCmd.Flags().String("question-id", "", "Question ID (32-byte hex, required)")
-	ctfConditionIDCmd.MarkFlagRequired("question-id")
+	_ = ctfConditionIDCmd.MarkFlagRequired("question-id")
 	ctfConditionIDCmd.Flags().Uint("outcomes", 2, "Number of outcome slots")
 	ctfCmd.AddCommand(ctfConditionIDCmd)
 
 	ctfCollectionIDCmd.Flags().String("condition", "", "Condition ID (hex, required)")
-	ctfCollectionIDCmd.MarkFlagRequired("condition")
+	_ = ctfCollectionIDCmd.MarkFlagRequired("condition")
 	ctfCollectionIDCmd.Flags().Uint("index-set", 1, "Index set")
 	ctfCollectionIDCmd.Flags().String("parent", "", "Parent collection ID (hex, optional)")
 	ctfCmd.AddCommand(ctfCollectionIDCmd)
 
 	ctfPositionIDCmd.Flags().String("collection", "", "Collection ID (hex, required)")
-	ctfPositionIDCmd.MarkFlagRequired("collection")
+	_ = ctfPositionIDCmd.MarkFlagRequired("collection")
 	ctfPositionIDCmd.Flags().String("collateral", chain.USDCAddress.Hex(), "Collateral token address")
 	ctfCmd.AddCommand(ctfPositionIDCmd)
 }

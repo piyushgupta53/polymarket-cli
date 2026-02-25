@@ -235,7 +235,7 @@ func (m *PortfolioModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "c":
 			if m.activeTab == TabOrders {
 				row := m.orderTable.SelectedRow()
-				if row != nil && len(row) > 0 {
+				if len(row) > 0 {
 					m.confirmingCancel = true
 					m.confirmOrderRow = row
 				}

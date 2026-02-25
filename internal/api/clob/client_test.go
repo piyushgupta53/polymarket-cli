@@ -13,7 +13,7 @@ func TestClientHealthCheck(t *testing.T) {
 		if r.URL.Path != "/" {
 			t.Errorf("unexpected path: %s", r.URL.Path)
 		}
-		w.Write([]byte(`"OK"`))
+		_, _ = w.Write([]byte(`"OK"`))
 	}))
 	defer server.Close()
 
@@ -32,7 +32,7 @@ func TestClientServerTime(t *testing.T) {
 		if r.URL.Path != "/time" {
 			t.Errorf("unexpected path: %s", r.URL.Path)
 		}
-		w.Write([]byte("1234567890"))
+		_, _ = w.Write([]byte("1234567890"))
 	}))
 	defer server.Close()
 
@@ -57,7 +57,7 @@ func TestClientGetPrice(t *testing.T) {
 		if r.URL.Query().Get("side") != "buy" {
 			t.Errorf("unexpected side: %s", r.URL.Query().Get("side"))
 		}
-		json.NewEncoder(w).Encode(PriceResponse{Price: "0.65"})
+		_ = json.NewEncoder(w).Encode(PriceResponse{Price: "0.65"})
 	}))
 	defer server.Close()
 
@@ -73,7 +73,7 @@ func TestClientGetPrice(t *testing.T) {
 
 func TestClientGetMidpoint(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(MidpointResponse{Mid: "0.50"})
+		_ = json.NewEncoder(w).Encode(MidpointResponse{Mid: "0.50"})
 	}))
 	defer server.Close()
 
@@ -89,7 +89,7 @@ func TestClientGetMidpoint(t *testing.T) {
 
 func TestClientGetSpread(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(SpreadResponse{Spread: "0.02"})
+		_ = json.NewEncoder(w).Encode(SpreadResponse{Spread: "0.02"})
 	}))
 	defer server.Close()
 
@@ -112,7 +112,7 @@ func TestClientGetBook(t *testing.T) {
 	}
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(book)
+		_ = json.NewEncoder(w).Encode(book)
 	}))
 	defer server.Close()
 
@@ -131,7 +131,7 @@ func TestClientGetBook(t *testing.T) {
 
 func TestClientGetLastTradePrice(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(LastTradeResponse{Price: "0.55", Side: "BUY"})
+		_ = json.NewEncoder(w).Encode(LastTradeResponse{Price: "0.55", Side: "BUY"})
 	}))
 	defer server.Close()
 
@@ -150,7 +150,7 @@ func TestClientGetLastTradePrice(t *testing.T) {
 
 func TestClientGetTickSize(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(TickSizeResponse{MinimumTickSize: 0.001})
+		_ = json.NewEncoder(w).Encode(TickSizeResponse{MinimumTickSize: 0.001})
 	}))
 	defer server.Close()
 
@@ -166,7 +166,7 @@ func TestClientGetTickSize(t *testing.T) {
 
 func TestClientGetFeeRate(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(FeeRateResponse{BaseFee: 0.01})
+		_ = json.NewEncoder(w).Encode(FeeRateResponse{BaseFee: 0.01})
 	}))
 	defer server.Close()
 
@@ -182,7 +182,7 @@ func TestClientGetFeeRate(t *testing.T) {
 
 func TestClientGetNegRisk(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(NegRiskResponse{NegRisk: true})
+		_ = json.NewEncoder(w).Encode(NegRiskResponse{NegRisk: true})
 	}))
 	defer server.Close()
 
@@ -209,7 +209,7 @@ func TestClientGetMarket(t *testing.T) {
 		if r.URL.Path != "/markets/0xabc" {
 			t.Errorf("unexpected path: %s", r.URL.Path)
 		}
-		json.NewEncoder(w).Encode(market)
+		_ = json.NewEncoder(w).Encode(market)
 	}))
 	defer server.Close()
 
@@ -225,7 +225,7 @@ func TestClientGetMarket(t *testing.T) {
 
 func TestClientListMarkets(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(ClobMarketsResponse{
+		_ = json.NewEncoder(w).Encode(ClobMarketsResponse{
 			Data:       []ClobMarket{{Question: "Test"}},
 			NextCursor: "abc",
 			Count:      1,
@@ -254,7 +254,7 @@ func TestClientGetPriceHistory(t *testing.T) {
 		if r.URL.Query().Get("interval") != "1d" {
 			t.Errorf("interval = %q, want %q", r.URL.Query().Get("interval"), "1d")
 		}
-		json.NewEncoder(w).Encode(PriceHistoryResponse{
+		_ = json.NewEncoder(w).Encode(PriceHistoryResponse{
 			History: []PriceHistoryPoint{{Timestamp: 12345, Price: 0.55}},
 		})
 	}))
@@ -289,7 +289,7 @@ func TestClientBatchPrices(t *testing.T) {
 			"token1": {Buy: "0.65"},
 			"token2": {Buy: "0.35"},
 		}
-		json.NewEncoder(w).Encode(resp)
+		_ = json.NewEncoder(w).Encode(resp)
 	}))
 	defer server.Close()
 
@@ -306,7 +306,7 @@ func TestClientBatchPrices(t *testing.T) {
 func TestClientBatchMidpoints(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		resp := map[string]string{"token1": "0.50", "token2": "0.60"}
-		json.NewEncoder(w).Encode(resp)
+		_ = json.NewEncoder(w).Encode(resp)
 	}))
 	defer server.Close()
 
@@ -323,7 +323,7 @@ func TestClientBatchMidpoints(t *testing.T) {
 func TestClientErrorHandling(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error": "internal error"}`))
+		_, _ = w.Write([]byte(`{"error": "internal error"}`))
 	}))
 	defer server.Close()
 
@@ -342,7 +342,7 @@ func TestClientErrorHandling(t *testing.T) {
 
 func TestClientSamplingMarkets(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(ClobMarketsResponse{
+		_ = json.NewEncoder(w).Encode(ClobMarketsResponse{
 			Data:  []ClobMarket{{Question: "Sampling market"}},
 			Count: 1,
 		})

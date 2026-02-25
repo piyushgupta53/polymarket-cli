@@ -217,7 +217,7 @@ func (m *MarketDetailModel) View() string {
 
 	// Scroll indicator when content overflows viewport
 	scrollInfo := ""
-	if !(m.viewport.AtTop() && m.viewport.AtBottom()) {
+	if !m.viewport.AtTop() || !m.viewport.AtBottom() {
 		pct := int(m.viewport.ScrollPercent() * 100)
 		scrollInfo = DimStyle.Render(fmt.Sprintf("  %d%%", pct))
 	}
