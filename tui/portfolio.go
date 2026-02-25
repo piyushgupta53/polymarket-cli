@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -45,6 +46,7 @@ type PortfolioModel struct {
 	showFullHelp     bool
 	confirmingCancel bool
 	confirmOrderRow  []string
+	active           bool // false when screen is not visible (suppresses refresh loops)
 	width            int
 	height           int
 }
@@ -117,6 +119,7 @@ func NewPortfolioModel(address string, clobCl *clob.Client, dataCl *data.DataCli
 		tradeTable: tt,
 		spinner:    s,
 		loading:    true,
+		active:     true,
 		address:    address,
 		clobClient: clobCl,
 		dataClient: dataCl,
@@ -137,7 +140,18 @@ func (m *PortfolioModel) Init() tea.Cmd {
 	)
 }
 
+// SetActive controls whether the model processes refresh tick messages.
+func (m *PortfolioModel) SetActive(v bool) { m.active = v }
+
 func (m *PortfolioModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	// Suppress refresh ticks when not the visible screen.
+	if !m.active {
+		switch msg.(type) {
+		case refreshTickMsg:
+			return m, nil
+		}
+	}
+
 	switch msg := msg.(type) {
 	case positionsLoadedMsg:
 		m.positions = msg.positions
@@ -512,14 +526,18 @@ func (m *PortfolioModel) emptyState(title, hint string) string {
 	if tableH < 5 {
 		tableH = 5
 	}
-	msg := "\n\n" + DimStyle.Render("  "+title) + "\n\n" + DimStyle.Render("  "+hint)
+	var sb strings.Builder
+	sb.WriteString("\n\n")
+	sb.WriteString(DimStyle.Render("  " + title))
+	sb.WriteString("\n\n")
+	sb.WriteString(DimStyle.Render("  " + hint))
 	// Pad to fill the table height so layout doesn't collapse
 	lines := 4 // newlines in msg
 	for lines < tableH {
-		msg += "\n"
+		sb.WriteByte('\n')
 		lines++
 	}
-	return msg
+	return sb.String()
 }
 
 func (m *PortfolioModel) cancelOrderByID(orderID string) tea.Cmd {

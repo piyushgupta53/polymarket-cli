@@ -33,8 +33,10 @@ type MarketDetailModel struct {
 	probTarget   float64
 	probCurrent  float64
 	springVel    float64
-	descRendered string
-	gammaClient  *api.GammaClient
+	descRendered      string
+	descRenderedWidth int    // width used to render descRendered (cache key)
+	descSource        string // raw description text (cache key)
+	gammaClient       *api.GammaClient
 	clobClient   *clob.Client
 	helpModel    help.Model
 	showFullHelp bool
@@ -345,6 +347,12 @@ func (m *MarketDetailModel) renderDescription() {
 	if width < 20 {
 		width = 20
 	}
+	// Skip re-render if source text and width haven't changed.
+	if desc == m.descSource && width == m.descRenderedWidth && m.descRendered != "" {
+		return
+	}
+	m.descSource = desc
+	m.descRenderedWidth = width
 	renderer, err := glamour.NewTermRenderer(
 		glamour.WithAutoStyle(),
 		glamour.WithWordWrap(width),

@@ -81,14 +81,14 @@ func TestShellHistory(t *testing.T) {
 func TestShellClear(t *testing.T) {
 	m := NewShellModel(nil, 80, 40)
 	m.Init()
-	m.output.WriteString("some output")
+	m.outputLines = append(m.outputLines, "some output")
 
 	m.input.SetValue("clear")
 	updated, _ := m.Update(tea.KeyMsg{Type: tea.KeyEnter})
 	m = updated.(*ShellModel)
 
-	if m.output.Len() != 0 {
-		t.Errorf("output should be cleared, got %d bytes", m.output.Len())
+	if len(m.outputLines) != 0 {
+		t.Errorf("output should be cleared, got %d lines", len(m.outputLines))
 	}
 }
 
@@ -131,7 +131,7 @@ func TestShellError(t *testing.T) {
 	m = updated.(*ShellModel)
 
 	// Error should be in the output
-	if m.output.Len() == 0 {
+	if len(m.outputLines) == 0 {
 		t.Error("expected error output to be appended")
 	}
 }

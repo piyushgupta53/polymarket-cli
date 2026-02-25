@@ -61,7 +61,7 @@ func printOrderBookSide(entries []clob.OrderBookEntry, isBid bool) {
 	type row struct {
 		price, size, total string
 	}
-	var rows []row
+	rows := make([]row, 0, len(entries))
 	var cumulative float64
 
 	if isBid {
@@ -70,7 +70,7 @@ func printOrderBookSide(entries []clob.OrderBookEntry, isBid bool) {
 			e := entries[i]
 			sz, _ := strconv.ParseFloat(e.Size, 64)
 			cumulative += sz
-			rows = append(rows, row{e.Price, e.Size, fmt.Sprintf("%.2f", cumulative)})
+			rows = append(rows, row{e.Price, e.Size, strconv.FormatFloat(cumulative, 'f', 2, 64)})
 		}
 	} else {
 		// Asks: show from lowest to highest, cumulate from bottom
@@ -82,7 +82,7 @@ func printOrderBookSide(entries []clob.OrderBookEntry, isBid bool) {
 			totals[i] = cum
 		}
 		for i, e := range entries {
-			rows = append(rows, row{e.Price, e.Size, fmt.Sprintf("%.2f", totals[i])})
+			rows = append(rows, row{e.Price, e.Size, strconv.FormatFloat(totals[i], 'f', 2, 64)})
 		}
 	}
 
@@ -123,7 +123,7 @@ func PrintClobMarketsTable(markets []clob.ClobMarket) {
 	}
 
 	headers := []string{"#", "Question", "Tokens", "Min Size", "Tick", "Status"}
-	var rows [][]string
+	rows := make([][]string, 0, len(markets))
 
 	for i, m := range markets {
 		status := FormatStatus(m.Active, m.Closed)
@@ -200,7 +200,7 @@ func PrintPriceHistory(history []clob.PriceHistoryPoint) {
 	}
 
 	headers := []string{"Time", "Price"}
-	var rows [][]string
+	rows := make([][]string, 0, len(history))
 
 	for _, h := range history {
 		t := time.Unix(h.Timestamp, 0)
@@ -329,7 +329,7 @@ func PrintOrdersTable(orders []clob.Order) {
 	}
 
 	headers := []string{"#", "ID", "Side", "Price", "Size", "Matched", "Status", "Created"}
-	var rows [][]string
+	rows := make([][]string, 0, len(orders))
 
 	for i, o := range orders {
 		side := o.Side
@@ -377,7 +377,7 @@ func PrintTradesTable(trades []clob.Trade) {
 	}
 
 	headers := []string{"#", "ID", "Side", "Price", "Size", "Fee", "Status", "Time"}
-	var rows [][]string
+	rows := make([][]string, 0, len(trades))
 
 	for i, tr := range trades {
 		rows = append(rows, []string{

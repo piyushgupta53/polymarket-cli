@@ -105,6 +105,8 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !a.hasAuth && (msg.screen == ScreenPortfolio || msg.screen == ScreenOrderForm) {
 			msg = pushScreenMsg{screen: ScreenSetupWizard, deriveFn: a.deriveFn}
 		}
+		// Deactivate the current top screen so its tick loops stop.
+		a.deactivateTop()
 		screen := a.constructScreen(pushScreenMsg(msg))
 		if screen == nil {
 			return a, nil
@@ -130,6 +132,8 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if len(a.screenStack) <= 1 {
 			return a, tea.Quit
 		}
+		// Deactivate the screen being popped.
+		a.deactivateTop()
 		// Start slide-out transition
 		if a.width > 0 {
 			a.transitioning = true
@@ -139,9 +143,12 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return a, transitionTick()
 		}
 		a.screenStack = a.screenStack[:len(a.screenStack)-1]
+		// Re-activate the new top screen.
+		a.activateTop()
 		return a, nil
 
 	case replaceScreenMsg:
+		a.deactivateTop()
 		screen := a.constructScreen(pushScreenMsg(msg))
 		if screen == nil {
 			return a, nil
@@ -212,6 +219,8 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if len(a.screenStack) > 1 {
 					a.screenStack = a.screenStack[:len(a.screenStack)-1]
 				}
+				// Re-activate the new top screen after pop animation.
+				a.activateTop()
 			}
 			// Force a full repaint so the un-offset view is flushed to the terminal.
 			// Without this, BubbleTea's diff renderer may hold a stale padded frame.
@@ -264,7 +273,11 @@ func (a *App) View() string {
 		}
 	}
 	if showStatusBar {
-		view += "\n" + a.renderStatusBar()
+		var sb strings.Builder
+		sb.WriteString(view)
+		sb.WriteByte('\n')
+		sb.WriteString(a.renderStatusBar())
+		view = sb.String()
 	}
 
 	return view
@@ -385,6 +398,31 @@ func (a *App) Height() int {
 // Transitioning returns the current transition state (for testing).
 func (a *App) Transitioning() bool {
 	return a.transitioning
+}
+
+// activatable is implemented by screens that run background tick loops.
+type activatable interface {
+	SetActive(bool)
+}
+
+// deactivateTop marks the current top screen as inactive (stops its tick loops).
+func (a *App) deactivateTop() {
+	if len(a.screenStack) == 0 {
+		return
+	}
+	if s, ok := a.screenStack[len(a.screenStack)-1].(activatable); ok {
+		s.SetActive(false)
+	}
+}
+
+// activateTop marks the current top screen as active (resumes its tick loops).
+func (a *App) activateTop() {
+	if len(a.screenStack) == 0 {
+		return
+	}
+	if s, ok := a.screenStack[len(a.screenStack)-1].(activatable); ok {
+		s.SetActive(true)
+	}
 }
 
 func transitionTick() tea.Cmd {

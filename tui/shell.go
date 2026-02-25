@@ -10,13 +10,18 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+const (
+	maxShellHistory    = 1000
+	maxOutputLines     = 5000
+)
+
 // ShellModel is the interactive REPL screen.
 type ShellModel struct {
 	input      textinput.Model
 	viewport   viewport.Model
 	history    []string
 	historyIdx int
-	output     strings.Builder
+	outputLines []string
 	width      int
 	height     int
 
@@ -38,13 +43,14 @@ func NewShellModel(execFn func(string) (string, error), w, h int) *ShellModel {
 	vp.Style = lipgloss.NewStyle().Padding(0, 1)
 
 	return &ShellModel{
-		input:      ti,
-		viewport:   vp,
-		history:    []string{},
-		historyIdx: -1,
-		width:      w,
-		height:     h,
-		execFn:     execFn,
+		input:       ti,
+		viewport:    vp,
+		history:     make([]string, 0, 64),
+		historyIdx:  -1,
+		outputLines: make([]string, 0, 128),
+		width:       w,
+		height:      h,
+		execFn:      execFn,
 	}
 }
 
@@ -67,7 +73,7 @@ func (m *ShellModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, func() tea.Msg { return popScreenMsg{} }
 			}
 			if input == "clear" {
-				m.output.Reset()
+				m.outputLines = m.outputLines[:0]
 				m.viewport.SetContent("")
 				m.input.SetValue("")
 				return m, nil
@@ -78,8 +84,12 @@ func (m *ShellModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 
-			// Add to history
+			// Add to history (capped)
 			m.history = append(m.history, input)
+			if len(m.history) > maxShellHistory {
+				copy(m.history, m.history[len(m.history)-maxShellHistory:])
+				m.history = m.history[:maxShellHistory]
+			}
 			m.historyIdx = len(m.history)
 
 			// Execute command
@@ -106,7 +116,7 @@ func (m *ShellModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 
 		case "ctrl+l":
-			m.output.Reset()
+			m.outputLines = m.outputLines[:0]
 			m.viewport.SetContent("")
 			return m, nil
 
@@ -152,11 +162,11 @@ func (m *ShellModel) View() string {
 }
 
 func (m *ShellModel) appendOutput(s string) {
-	if m.output.Len() > 0 {
-		m.output.WriteString("\n")
+	m.outputLines = append(m.outputLines, s)
+	if len(m.outputLines) > maxOutputLines {
+		m.outputLines = m.outputLines[len(m.outputLines)-maxOutputLines:]
 	}
-	m.output.WriteString(s)
-	m.viewport.SetContent(m.output.String())
+	m.viewport.SetContent(strings.Join(m.outputLines, "\n"))
 	m.viewport.GotoBottom()
 }
 

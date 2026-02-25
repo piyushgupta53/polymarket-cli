@@ -34,67 +34,51 @@ func NewBridgeClient(baseURL string) *BridgeClient {
 	}
 }
 
-// get performs a GET request and returns the response body.
-func (c *BridgeClient) get(path string) ([]byte, error) {
+// getJSON performs a GET request and streams the JSON response into dest.
+func (c *BridgeClient) getJSON(path string, dest any) error {
 	url := c.baseURL + path
 	log.Debug("GET", "url", url)
 
 	resp, err := c.httpClient.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("request failed: %w", err)
+		return fmt.Errorf("request failed: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("reading response: %w", err)
-	}
-
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
-	return body, nil
+	if err := json.NewDecoder(resp.Body).Decode(dest); err != nil {
+		return fmt.Errorf("parsing response: %w", err)
+	}
+	return nil
 }
 
 // GetDepositAddresses retrieves deposit addresses for supported chains.
 func (c *BridgeClient) GetDepositAddresses() (*DepositAddresses, error) {
-	data, err := c.get("/deposit-addresses")
-	if err != nil {
-		return nil, err
-	}
-
 	var addrs DepositAddresses
-	if err := json.Unmarshal(data, &addrs); err != nil {
-		return nil, fmt.Errorf("parsing deposit addresses: %w", err)
+	if err := c.getJSON("/deposit-addresses", &addrs); err != nil {
+		return nil, err
 	}
 	return &addrs, nil
 }
 
 // GetSupportedAssets retrieves the list of supported assets for bridging.
 func (c *BridgeClient) GetSupportedAssets() ([]SupportedAsset, error) {
-	data, err := c.get("/supported-assets")
-	if err != nil {
-		return nil, err
-	}
-
 	var assets []SupportedAsset
-	if err := json.Unmarshal(data, &assets); err != nil {
-		return nil, fmt.Errorf("parsing supported assets: %w", err)
+	if err := c.getJSON("/supported-assets", &assets); err != nil {
+		return nil, err
 	}
 	return assets, nil
 }
 
 // GetDepositStatus retrieves the status of a deposit by transaction hash.
 func (c *BridgeClient) GetDepositStatus(txHash string) (*DepositStatus, error) {
-	data, err := c.get("/deposit-status?txHash=" + txHash)
-	if err != nil {
-		return nil, err
-	}
-
 	var status DepositStatus
-	if err := json.Unmarshal(data, &status); err != nil {
-		return nil, fmt.Errorf("parsing deposit status: %w", err)
+	if err := c.getJSON("/deposit-status?txHash="+txHash, &status); err != nil {
+		return nil, err
 	}
 	return &status, nil
 }

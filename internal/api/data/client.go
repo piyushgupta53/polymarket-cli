@@ -35,7 +35,7 @@ func NewDataClient(baseURL string) *DataClient {
 	}
 }
 
-// get performs a GET request and returns the response body.
+// get performs a GET request and returns the raw response body.
 func (c *DataClient) get(path string) ([]byte, error) {
 	url := c.baseURL + path
 	log.Debug("GET", "url", url)
@@ -58,44 +58,51 @@ func (c *DataClient) get(path string) ([]byte, error) {
 	return body, nil
 }
 
-// GetPositions retrieves open positions for an address.
-func (c *DataClient) GetPositions(address string) ([]Position, error) {
-	data, err := c.get("/positions" + api.BuildQueryString(api.QueryParams{"address": address}))
+// getJSON performs a GET request and streams the JSON response into dest.
+func (c *DataClient) getJSON(path string, dest any) error {
+	url := c.baseURL + path
+	log.Debug("GET", "url", url)
+
+	resp, err := c.httpClient.Get(url)
 	if err != nil {
-		return nil, err
+		return fmt.Errorf("request failed: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
+	if err := json.NewDecoder(resp.Body).Decode(dest); err != nil {
+		return fmt.Errorf("parsing response: %w", err)
+	}
+	return nil
+}
+
+// GetPositions retrieves open positions for an address.
+func (c *DataClient) GetPositions(address string) ([]Position, error) {
 	var positions []Position
-	if err := json.Unmarshal(data, &positions); err != nil {
-		return nil, fmt.Errorf("parsing positions: %w", err)
+	if err := c.getJSON("/positions"+api.BuildQueryString(api.QueryParams{"address": address}), &positions); err != nil {
+		return nil, err
 	}
 	return positions, nil
 }
 
 // GetClosedPositions retrieves closed positions for an address.
 func (c *DataClient) GetClosedPositions(address string) ([]Position, error) {
-	data, err := c.get("/positions/closed" + api.BuildQueryString(api.QueryParams{"address": address}))
-	if err != nil {
-		return nil, err
-	}
-
 	var positions []Position
-	if err := json.Unmarshal(data, &positions); err != nil {
-		return nil, fmt.Errorf("parsing closed positions: %w", err)
+	if err := c.getJSON("/positions/closed"+api.BuildQueryString(api.QueryParams{"address": address}), &positions); err != nil {
+		return nil, err
 	}
 	return positions, nil
 }
 
 // GetPortfolioValue retrieves portfolio value history for an address.
 func (c *DataClient) GetPortfolioValue(address string) ([]PortfolioValue, error) {
-	data, err := c.get("/value" + api.BuildQueryString(api.QueryParams{"address": address}))
-	if err != nil {
-		return nil, err
-	}
-
 	var values []PortfolioValue
-	if err := json.Unmarshal(data, &values); err != nil {
-		return nil, fmt.Errorf("parsing portfolio value: %w", err)
+	if err := c.getJSON("/value"+api.BuildQueryString(api.QueryParams{"address": address}), &values); err != nil {
+		return nil, err
 	}
 	return values, nil
 }
@@ -118,14 +125,9 @@ func (c *DataClient) GetActivity(address string, limit, offset int) ([]Activity,
 	if offset > 0 {
 		params["offset"] = fmt.Sprintf("%d", offset)
 	}
-	data, err := c.get("/activity" + api.BuildQueryString(params))
-	if err != nil {
-		return nil, err
-	}
-
 	var activities []Activity
-	if err := json.Unmarshal(data, &activities); err != nil {
-		return nil, fmt.Errorf("parsing activity: %w", err)
+	if err := c.getJSON("/activity"+api.BuildQueryString(params), &activities); err != nil {
+		return nil, err
 	}
 	return activities, nil
 }
@@ -139,56 +141,36 @@ func (c *DataClient) GetTrades(address string, limit, offset int) ([]TradeRecord
 	if offset > 0 {
 		params["offset"] = fmt.Sprintf("%d", offset)
 	}
-	data, err := c.get("/trades" + api.BuildQueryString(params))
-	if err != nil {
-		return nil, err
-	}
-
 	var trades []TradeRecord
-	if err := json.Unmarshal(data, &trades); err != nil {
-		return nil, fmt.Errorf("parsing trades: %w", err)
+	if err := c.getJSON("/trades"+api.BuildQueryString(params), &trades); err != nil {
+		return nil, err
 	}
 	return trades, nil
 }
 
 // GetHolders retrieves top holders for a market condition.
 func (c *DataClient) GetHolders(conditionID string) ([]Holder, error) {
-	data, err := c.get("/holders" + api.BuildQueryString(api.QueryParams{"conditionId": conditionID}))
-	if err != nil {
-		return nil, err
-	}
-
 	var holders []Holder
-	if err := json.Unmarshal(data, &holders); err != nil {
-		return nil, fmt.Errorf("parsing holders: %w", err)
+	if err := c.getJSON("/holders"+api.BuildQueryString(api.QueryParams{"conditionId": conditionID}), &holders); err != nil {
+		return nil, err
 	}
 	return holders, nil
 }
 
 // GetOpenInterest retrieves open interest for a market condition.
 func (c *DataClient) GetOpenInterest(conditionID string) (*OpenInterest, error) {
-	data, err := c.get("/open-interest" + api.BuildQueryString(api.QueryParams{"conditionId": conditionID}))
-	if err != nil {
-		return nil, err
-	}
-
 	var oi OpenInterest
-	if err := json.Unmarshal(data, &oi); err != nil {
-		return nil, fmt.Errorf("parsing open interest: %w", err)
+	if err := c.getJSON("/open-interest"+api.BuildQueryString(api.QueryParams{"conditionId": conditionID}), &oi); err != nil {
+		return nil, err
 	}
 	return &oi, nil
 }
 
 // GetEventVolume retrieves volume data for an event.
 func (c *DataClient) GetEventVolume(eventID string) (*EventVolume, error) {
-	data, err := c.get("/volume" + api.BuildQueryString(api.QueryParams{"eventId": eventID}))
-	if err != nil {
-		return nil, err
-	}
-
 	var vol EventVolume
-	if err := json.Unmarshal(data, &vol); err != nil {
-		return nil, fmt.Errorf("parsing event volume: %w", err)
+	if err := c.getJSON("/volume"+api.BuildQueryString(api.QueryParams{"eventId": eventID}), &vol); err != nil {
+		return nil, err
 	}
 	return &vol, nil
 }
@@ -202,14 +184,9 @@ func (c *DataClient) GetLeaderboard(limit, offset int) ([]LeaderboardEntry, erro
 	if offset > 0 {
 		params["offset"] = fmt.Sprintf("%d", offset)
 	}
-	data, err := c.get("/leaderboard" + api.BuildQueryString(params))
-	if err != nil {
-		return nil, err
-	}
-
 	var entries []LeaderboardEntry
-	if err := json.Unmarshal(data, &entries); err != nil {
-		return nil, fmt.Errorf("parsing leaderboard: %w", err)
+	if err := c.getJSON("/leaderboard"+api.BuildQueryString(params), &entries); err != nil {
+		return nil, err
 	}
 	return entries, nil
 }

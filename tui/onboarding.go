@@ -18,6 +18,7 @@ type OnboardingModel struct {
 	width    int
 	height   int
 	phase    float64
+	active   bool // false when screen is not visible (suppresses wave ticks)
 }
 
 // NewOnboardingModel creates a new onboarding screen.
@@ -27,6 +28,7 @@ func NewOnboardingModel(deriveFn func(string, string) (string, error), w, h int)
 		deriveFn: deriveFn,
 		width:    w,
 		height:   h,
+		active:   true,
 	}
 }
 
@@ -34,9 +36,15 @@ func (m *OnboardingModel) Init() tea.Cmd {
 	return waveTick()
 }
 
+// SetActive controls whether the model processes wave tick messages.
+func (m *OnboardingModel) SetActive(v bool) { m.active = v }
+
 func (m *OnboardingModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case waveTickMsg:
+		if !m.active {
+			return m, nil
+		}
 		m.phase += 0.10
 		return m, waveTick()
 	case tea.KeyMsg:

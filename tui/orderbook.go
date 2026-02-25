@@ -3,6 +3,7 @@ package tui
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 	"time"
 
@@ -52,6 +53,7 @@ type OrderBookModel struct {
 	flashSpring   harmonica.Spring
 	flashing      bool
 	firstLoad     bool // suppress flash on initial load
+	active        bool // false when screen is not visible (suppresses tick loops)
 	helpModel     help.Model
 	showFullHelp  bool
 }
@@ -76,6 +78,7 @@ func NewOrderBookModel(tokenID, question string, clobCl *clob.Client, w, h int) 
 		askFlash:      make(map[int]flashEntry),
 		flashSpring:   harmonica.NewSpring(harmonica.FPS(60), 5.0, 0.6),
 		firstLoad:     true,
+		active:        true,
 		helpModel:     newHelpModel(),
 	}
 }
@@ -88,7 +91,18 @@ func (m *OrderBookModel) Init() tea.Cmd {
 	)
 }
 
+// SetActive controls whether the model processes tick messages.
+func (m *OrderBookModel) SetActive(v bool) { m.active = v }
+
 func (m *OrderBookModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	// Suppress all tick-driven work when not the visible screen.
+	if !m.active {
+		switch msg.(type) {
+		case refreshTickMsg, flashTickMsg, orderBookRefreshMsg, orderBookRefreshErrorMsg:
+			return m, nil
+		}
+	}
+
 	switch msg := msg.(type) {
 	case orderBookLoadedMsg:
 		m.loading = false
@@ -292,7 +306,7 @@ func (m *OrderBookModel) updateTables() {
 		b := m.orderBook.Bids[i]
 		size := parseFloat(b.Size)
 		cumBid += size
-		m.bidRows = append(m.bidRows, orderRow{b.Price, b.Size, fmt.Sprintf("%.2f", cumBid)})
+		m.bidRows = append(m.bidRows, orderRow{b.Price, b.Size, strconv.FormatFloat(cumBid, 'f', 2, 64)})
 		newBidPrices[b.Price] = b.Size
 	}
 
@@ -304,7 +318,7 @@ func (m *OrderBookModel) updateTables() {
 		a := m.orderBook.Asks[i]
 		size := parseFloat(a.Size)
 		cumAsk += size
-		m.askRows = append(m.askRows, orderRow{a.Price, a.Size, fmt.Sprintf("%.2f", cumAsk)})
+		m.askRows = append(m.askRows, orderRow{a.Price, a.Size, strconv.FormatFloat(cumAsk, 'f', 2, 64)})
 		newAskPrices[a.Price] = a.Size
 	}
 

@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -53,17 +54,13 @@ func DeriveAPIKey(baseURL string, privateKey *ecdsa.PrivateKey, chainID, sigType
 	}
 	defer func() { _ = resp.Body.Close() }()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("reading response: %w", err)
-	}
-
 	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("derive-api-key failed (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	var creds APICredentials
-	if err := json.Unmarshal(body, &creds); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&creds); err != nil {
 		return nil, fmt.Errorf("parsing credentials: %w", err)
 	}
 
@@ -102,17 +99,13 @@ func CreateAPIKey(baseURL string, privateKey *ecdsa.PrivateKey, chainID int) (*A
 	}
 	defer func() { _ = resp.Body.Close() }()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("reading response: %w", err)
-	}
-
 	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("create-api-key failed (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	var creds APICredentials
-	if err := json.Unmarshal(body, &creds); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&creds); err != nil {
 		return nil, fmt.Errorf("parsing credentials: %w", err)
 	}
 
