@@ -2,6 +2,9 @@
 
 A full-featured command-line interface for [Polymarket](https://polymarket.com) prediction markets. Browse markets, place trades, and manage your portfolio — all from the terminal.
 
+## Demo
+https://github.com/user-attachments/assets/b91aa38b-aa48-476d-a924-b1458ce3c795
+
 ## Installation
 
 ```bash
