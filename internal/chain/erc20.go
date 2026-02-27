@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"fmt"
+	"math"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -12,8 +13,7 @@ import (
 
 // USDCToRaw converts a USDC amount (e.g., 10.5) to raw units (10500000).
 func USDCToRaw(amount float64) *big.Int {
-	// Multiply by 10^6, using integer math to avoid float precision issues
-	micro := int64(amount * 1e6)
+	micro := int64(math.Round(amount * 1e6))
 	return big.NewInt(micro)
 }
 
@@ -22,12 +22,13 @@ func RawToUSDC(raw *big.Int) string {
 	if raw == nil {
 		return "0.000000"
 	}
+	// Handle negative values by converting the absolute value and prepending "-"
+	if raw.Sign() < 0 {
+		return "-" + RawToUSDC(new(big.Int).Abs(raw))
+	}
 	divisor := big.NewInt(1e6)
 	whole := new(big.Int).Div(raw, divisor)
 	remainder := new(big.Int).Mod(raw, divisor)
-	if remainder.Sign() < 0 {
-		remainder.Abs(remainder)
-	}
 	return fmt.Sprintf("%s.%06d", whole.String(), remainder.Int64())
 }
 
@@ -61,7 +62,7 @@ func (c *ChainClient) GetUSDCAllowance(ctx context.Context, owner, spender commo
 // If amount is nil, approves MaxUint256 (unlimited).
 func (c *ChainClient) ApproveUSDC(ctx context.Context, privateKey *ecdsa.PrivateKey, spender common.Address, amount *big.Int) (*TxResult, error) {
 	if amount == nil {
-		amount = MaxUint256
+		amount = MaxUint256()
 	}
 	data, err := PackERC20Approve(spender, amount)
 	if err != nil {

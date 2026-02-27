@@ -147,7 +147,7 @@ func (m *PortfolioModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// Suppress refresh ticks when not the visible screen.
 	if !m.active {
 		switch msg.(type) {
-		case refreshTickMsg:
+		case portfolioRefreshTickMsg:
 			return m, nil
 		}
 	}
@@ -200,7 +200,7 @@ func (m *PortfolioModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case orderCancelErrorMsg:
 		return m, nil
 
-	case refreshTickMsg:
+	case portfolioRefreshTickMsg:
 		m.fetchesDone = 0
 		return m, tea.Batch(
 			m.fetchPositions(),
@@ -415,7 +415,7 @@ func (m *PortfolioModel) checkLoading() {
 
 func schedulePortfolioRefresh() tea.Cmd {
 	return tea.Tick(portfolioRefreshInterval, func(t time.Time) tea.Msg {
-		return refreshTickMsg(t)
+		return portfolioRefreshTickMsg(t)
 	})
 }
 

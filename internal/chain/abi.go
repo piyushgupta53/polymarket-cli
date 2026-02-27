@@ -8,8 +8,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-// MaxUint256 is the maximum value for a uint256.
-var MaxUint256 = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 256), big.NewInt(1))
+// maxUint256 is the maximum value for a uint256 (unexported to prevent mutation).
+var maxUint256 = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 256), big.NewInt(1))
+
+// MaxUint256 returns a copy of the maximum uint256 value.
+func MaxUint256() *big.Int {
+	return new(big.Int).Set(maxUint256)
+}
 
 var (
 	erc20ABI  abi.ABI

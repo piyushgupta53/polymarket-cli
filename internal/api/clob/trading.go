@@ -25,7 +25,7 @@ func (c *Client) PostOrder(order *OrderPayload) (*OrderResponse, error) {
 
 // CancelOrder cancels a single order by ID.
 func (c *Client) CancelOrder(orderID string) (*CancelResponse, error) {
-	body, err := json.Marshal(map[string]string{"id": orderID})
+	body, err := json.Marshal(map[string]string{"orderID": orderID})
 	if err != nil {
 		return nil, fmt.Errorf("marshaling cancel: %w", err)
 	}
@@ -63,7 +63,7 @@ func (c *Client) CancelMarketOrders(conditionID string) (*CancelResponse, error)
 	if err != nil {
 		return nil, fmt.Errorf("marshaling cancel: %w", err)
 	}
-	data, err := c.doAuthDeleteWithBody("/orders", body)
+	data, err := c.doAuthDeleteWithBody("/cancel-market-orders", body)
 	if err != nil {
 		return nil, err
 	}

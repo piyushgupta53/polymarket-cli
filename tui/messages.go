@@ -140,8 +140,9 @@ type shellErrorMsg struct {
 // Animation tick
 type animateTickMsg time.Time
 
-// Refresh tick (for live order book and portfolio)
-type refreshTickMsg time.Time
+// Refresh ticks — distinct types to prevent cross-screen leaking
+type orderBookRefreshTickMsg time.Time
+type portfolioRefreshTickMsg time.Time
 
 // Animation-specific ticks
 type waveTickMsg time.Time

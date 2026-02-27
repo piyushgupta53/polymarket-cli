@@ -43,6 +43,7 @@ func SetVersionInfo(version, commit, date string) {
 	appVersion = version
 	appCommit = commit
 	appDate = date
+	rootCmd.Version = version
 }
 
 var rootCmd = &cobra.Command{
@@ -51,6 +52,10 @@ var rootCmd = &cobra.Command{
 	Long:    "A full-featured CLI for interacting with Polymarket prediction markets.\nBrowse markets, place trades, and manage your portfolio.",
 	Version: appVersion,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		// Reset state that may have been set by a previous command in the shell REPL.
+		log.SetLevel(log.InfoLevel)
+		log.SetOutput(os.Stderr)
+
 		if verbose {
 			log.SetLevel(log.DebugLevel)
 		}
@@ -69,6 +74,8 @@ var rootCmd = &cobra.Command{
 		}
 		if noColor {
 			lipgloss.SetColorProfile(termenv.Ascii)
+		} else {
+			lipgloss.SetColorProfile(termenv.ColorProfile())
 		}
 
 		// Quiet mode: suppress log output

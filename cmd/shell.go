@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"bytes"
+	"io"
+	"os"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -56,27 +58,44 @@ func (s *shellLauncher) View() string {
 }
 
 // shellExecFn dispatches a shell input line to the Cobra command tree.
+// It redirects os.Stdout via os.Pipe to capture all output including fmt.Println
+// calls that bypass cobra's output writer. This is safe because BubbleTea's
+// renderer holds its own reference to the original stdout from program creation.
 func shellExecFn(input string) (string, error) {
 	args := strings.Fields(input)
 	if len(args) == 0 {
 		return "", nil
 	}
 
-	// Capture stdout
-	var buf bytes.Buffer
-	rootCmd.SetOut(&buf)
-	rootCmd.SetErr(&buf)
-	rootCmd.SetArgs(args)
-	defer func() {
-		rootCmd.SetOut(nil)
-		rootCmd.SetErr(nil)
-		rootCmd.SetArgs(nil)
-	}()
-
-	err := rootCmd.Execute()
-	output := buf.String()
-	if err != nil && output == "" {
+	// Create a pipe to capture all writes to os.Stdout
+	r, w, err := os.Pipe()
+	if err != nil {
 		return "", err
 	}
-	return strings.TrimSuffix(output, "\n"), err
+
+	origStdout := os.Stdout
+	os.Stdout = w
+
+	rootCmd.SetOut(w)
+	rootCmd.SetErr(w)
+	rootCmd.SetArgs(args)
+
+	execErr := rootCmd.Execute()
+
+	// Restore stdout before reading pipe
+	os.Stdout = origStdout
+	rootCmd.SetOut(nil)
+	rootCmd.SetErr(nil)
+	rootCmd.SetArgs(nil)
+	w.Close()
+
+	var buf bytes.Buffer
+	_, _ = io.Copy(&buf, r)
+	r.Close()
+
+	captured := buf.String()
+	if execErr != nil && captured == "" {
+		return "", execErr
+	}
+	return strings.TrimSuffix(captured, "\n"), execErr
 }

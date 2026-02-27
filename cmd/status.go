@@ -10,8 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const version = "0.1.0"
-
 var statusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "Show CLI and API status",
@@ -42,7 +40,7 @@ func runStatus(cmd *cobra.Command, args []string) error {
 	fmt.Println()
 
 	// Version info
-	fmt.Println(labelStyle.Render("Version") + version)
+	fmt.Println(labelStyle.Render("Version") + appVersion)
 	fmt.Println(labelStyle.Render("Go Version") + runtime.Version())
 	fmt.Println(labelStyle.Render("Platform") + runtime.GOOS + "/" + runtime.GOARCH)
 	fmt.Println()
@@ -74,7 +72,7 @@ func runStatusJSON() error {
 	elapsed := time.Since(start)
 
 	result := map[string]any{
-		"version":    version,
+		"version":    appVersion,
 		"go_version": runtime.Version(),
 		"platform":   runtime.GOOS + "/" + runtime.GOARCH,
 		"gamma_api": map[string]any{

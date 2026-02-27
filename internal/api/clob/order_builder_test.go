@@ -181,6 +181,15 @@ func TestBuildSignedOrder_PriceOutOfRange(t *testing.T) {
 			t.Errorf("expected error for price=%.2f", price)
 		}
 	}
+	// Fine-grained prices within (0, 1) should be accepted
+	for _, price := range []float64{0.001, 0.005, 0.995, 0.999} {
+		_, err := BuildSignedOrder(OrderParams{
+			TokenID: "111", Side: "BUY", Price: price, Size: 10,
+		}, key, 137)
+		if err != nil {
+			t.Errorf("price=%.3f should be valid, got: %v", price, err)
+		}
+	}
 }
 
 func TestBuildSignedOrder_InvalidSize(t *testing.T) {

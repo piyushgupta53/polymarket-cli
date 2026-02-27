@@ -128,7 +128,7 @@ func runMarketsGet(cmd *cobra.Command, args []string) error {
 	}
 
 	if err != nil {
-		return output.ErrNotFound(fmt.Sprintf("market %q", identifier))
+		return fmt.Errorf("getting market %q: %w", identifier, err)
 	}
 
 	if getOutputFormat() == "json" {

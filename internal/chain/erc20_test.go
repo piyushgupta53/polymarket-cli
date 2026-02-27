@@ -18,6 +18,13 @@ func TestUSDCToRaw(t *testing.T) {
 		{10.5, 10_500_000},
 		{0.000001, 1},
 		{100.123456, 100_123_456},
+		// Float precision edge cases: these values have inexact float64
+		// representations where int64 truncation would lose 1 micro-unit.
+		{2.01, 2_010_000},
+		{2.03, 2_030_000},
+		{2.05, 2_050_000},
+		{4.02, 4_020_000},
+		{8.03, 8_030_000},
 	}
 
 	for _, tt := range tests {
@@ -39,6 +46,10 @@ func TestRawToUSDC(t *testing.T) {
 		{big.NewInt(1), "0.000001"},
 		{big.NewInt(100_123_456), "100.123456"},
 		{nil, "0.000000"},
+		// Negative values
+		{big.NewInt(-1_500_000), "-1.500000"},
+		{big.NewInt(-500_000), "-0.500000"},
+		{big.NewInt(-1), "-0.000001"},
 	}
 
 	for _, tt := range tests {
@@ -66,7 +77,7 @@ func TestGetUSDCBalance(t *testing.T) {
 }
 
 func TestGetUSDCAllowance(t *testing.T) {
-	expected := MaxUint256
+	expected := MaxUint256()
 	mock := &mockEthClient{
 		callResult: common.LeftPadBytes(expected.Bytes(), 32),
 	}

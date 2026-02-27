@@ -62,6 +62,20 @@ func TestCancelOrder(t *testing.T) {
 		if r.Method != "DELETE" {
 			t.Errorf("method = %s, want DELETE", r.Method)
 		}
+		if r.URL.Path != "/order" {
+			t.Errorf("path = %s, want /order", r.URL.Path)
+		}
+		// Verify the request body uses "orderID" field (per Polymarket API spec)
+		var body map[string]string
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			t.Fatalf("decoding body: %v", err)
+		}
+		if body["orderID"] != "order-123" {
+			t.Errorf("body orderID = %q, want order-123", body["orderID"])
+		}
+		if _, ok := body["id"]; ok {
+			t.Error("body contains 'id' field; should use 'orderID'")
+		}
 		_ = json.NewEncoder(w).Encode(CancelResponse{
 			Canceled: []string{"order-123"},
 		})
@@ -227,6 +241,20 @@ func TestCancelOrders(t *testing.T) {
 
 func TestCancelMarketOrders(t *testing.T) {
 	c := newTestAuthClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "DELETE" {
+			t.Errorf("method = %s, want DELETE", r.Method)
+		}
+		// Must hit /cancel-market-orders, NOT /orders (per Polymarket API spec)
+		if r.URL.Path != "/cancel-market-orders" {
+			t.Errorf("path = %s, want /cancel-market-orders", r.URL.Path)
+		}
+		var body map[string]string
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			t.Fatalf("decoding body: %v", err)
+		}
+		if body["market"] != "cond-123" {
+			t.Errorf("body market = %q, want cond-123", body["market"])
+		}
 		_ = json.NewEncoder(w).Encode(CancelResponse{
 			Canceled: []string{"o1"},
 		})

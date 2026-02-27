@@ -1,6 +1,7 @@
 package output
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"strconv"
@@ -190,20 +191,9 @@ func parseJSONStringArray(raw string) []string {
 	if !strings.HasPrefix(raw, "[") {
 		return nil
 	}
-	// Simple parser for JSON string arrays
-	raw = strings.TrimPrefix(raw, "[")
-	raw = strings.TrimSuffix(raw, "]")
-	if raw == "" {
-		return nil
-	}
-
 	var result []string
-	for _, part := range strings.Split(raw, ",") {
-		part = strings.TrimSpace(part)
-		part = strings.Trim(part, `"`)
-		if part != "" {
-			result = append(result, part)
-		}
+	if err := json.Unmarshal([]byte(raw), &result); err != nil {
+		return nil
 	}
 	return result
 }

@@ -132,7 +132,9 @@ func (c *Config) Save() error {
 	return c.SaveTo(DefaultConfigPath())
 }
 
-// SaveTo writes the config to a specific path.
+// SaveTo writes the config to a specific path using atomic write
+// (write to temp file + rename) to prevent corruption from concurrent
+// access or crashes mid-write.
 func (c *Config) SaveTo(path string) error {
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, 0700); err != nil {
@@ -144,5 +146,26 @@ func (c *Config) SaveTo(path string) error {
 		return err
 	}
 
-	return os.WriteFile(path, data, 0600)
+	// Write to temp file in the same directory, then rename for atomicity.
+	tmp, err := os.CreateTemp(dir, ".config-*.tmp")
+	if err != nil {
+		return err
+	}
+	tmpPath := tmp.Name()
+
+	if _, err := tmp.Write(data); err != nil {
+		tmp.Close()
+		os.Remove(tmpPath)
+		return err
+	}
+	if err := tmp.Close(); err != nil {
+		os.Remove(tmpPath)
+		return err
+	}
+	if err := os.Chmod(tmpPath, 0600); err != nil {
+		os.Remove(tmpPath)
+		return err
+	}
+
+	return os.Rename(tmpPath, path)
 }

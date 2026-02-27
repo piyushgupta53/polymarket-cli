@@ -98,7 +98,7 @@ func (m *OrderBookModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// Suppress all tick-driven work when not the visible screen.
 	if !m.active {
 		switch msg.(type) {
-		case refreshTickMsg, flashTickMsg, orderBookRefreshMsg, orderBookRefreshErrorMsg:
+		case orderBookRefreshTickMsg, flashTickMsg, orderBookRefreshMsg, orderBookRefreshErrorMsg:
 			return m, nil
 		}
 	}
@@ -134,7 +134,7 @@ func (m *OrderBookModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.midpoint = msg.mid
 		return m, nil
 
-	case refreshTickMsg:
+	case orderBookRefreshTickMsg:
 		return m, tea.Batch(m.refreshBook(), m.fetchMidpoint())
 
 	case flashTickMsg:
@@ -385,7 +385,7 @@ func (m *OrderBookModel) fetchMidpoint() tea.Cmd {
 
 func scheduleRefresh() tea.Cmd {
 	return tea.Tick(refreshInterval, func(t time.Time) tea.Msg {
-		return refreshTickMsg(t)
+		return orderBookRefreshTickMsg(t)
 	})
 }
 

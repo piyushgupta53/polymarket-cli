@@ -24,7 +24,7 @@ var ZeroAddress = common.HexToAddress("0x000000000000000000000000000000000000000
 type OrderParams struct {
 	TokenID    string
 	Side       string  // "BUY" or "SELL"
-	Price      float64 // 0.01 – 0.99
+	Price      float64 // (0, 1) exclusive — varies by tick size
 	Size       float64 // number of shares
 	OrderType  string  // "GTC", "FOK", "GTD"
 	Expiration string  // unix timestamp string, "0" for no expiry
@@ -38,8 +38,8 @@ func BuildSignedOrder(params OrderParams, privateKey *ecdsa.PrivateKey, chainID 
 	if side != "BUY" && side != "SELL" {
 		return nil, fmt.Errorf("invalid side %q: must be BUY or SELL", params.Side)
 	}
-	if params.Price < 0.01 || params.Price > 0.99 {
-		return nil, fmt.Errorf("price %.4f out of range [0.01, 0.99]", params.Price)
+	if params.Price <= 0 || params.Price >= 1 {
+		return nil, fmt.Errorf("price %.4f out of range (0, 1)", params.Price)
 	}
 	if params.Size <= 0 {
 		return nil, fmt.Errorf("size must be greater than 0")

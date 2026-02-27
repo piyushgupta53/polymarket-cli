@@ -66,7 +66,7 @@ var approveCheckCmd = &cobra.Command{
 
 		balStr := chain.RawToUSDC(balance)
 		allowStr := chain.RawToUSDC(allowance)
-		unlimited := allowance.Cmp(chain.MaxUint256) == 0
+		unlimited := allowance.Cmp(chain.MaxUint256()) == 0
 
 		if getOutputFormat() == "json" {
 			data := map[string]string{

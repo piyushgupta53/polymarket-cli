@@ -114,10 +114,17 @@ func TestUnpackBoolRoundTrip(t *testing.T) {
 }
 
 func TestMaxUint256(t *testing.T) {
-	// MaxUint256 should be 2^256 - 1
+	// MaxUint256() should be 2^256 - 1
 	expected := new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 256), big.NewInt(1))
-	if MaxUint256.Cmp(expected) != 0 {
-		t.Errorf("MaxUint256 = %s, want %s", MaxUint256.String(), expected.String())
+	got := MaxUint256()
+	if got.Cmp(expected) != 0 {
+		t.Errorf("MaxUint256() = %s, want %s", got.String(), expected.String())
+	}
+	// Verify it returns a copy (mutation should not affect the original)
+	got.SetInt64(0)
+	got2 := MaxUint256()
+	if got2.Cmp(expected) != 0 {
+		t.Error("MaxUint256() returned a shared reference instead of a copy")
 	}
 }
 

@@ -31,8 +31,8 @@ func PrintOrderBook(book *clob.OrderBook) {
 
 	// Spread
 	if len(book.Bids) > 0 && len(book.Asks) > 0 {
-		bestBid := book.Bids[len(book.Bids)-1].Price
-		bestAsk := book.Asks[len(book.Asks)-1].Price
+		bestBid := book.Bids[len(book.Bids)-1].Price // bids sorted ascending, last = highest = best
+		bestAsk := book.Asks[0].Price                 // asks sorted ascending, first = lowest = best
 		bidF, errB := strconv.ParseFloat(bestBid, 64)
 		askF, errA := strconv.ParseFloat(bestAsk, 64)
 		if errB == nil && errA == nil {
