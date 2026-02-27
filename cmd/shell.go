@@ -87,11 +87,11 @@ func shellExecFn(input string) (string, error) {
 	rootCmd.SetOut(nil)
 	rootCmd.SetErr(nil)
 	rootCmd.SetArgs(nil)
-	w.Close()
+	_ = w.Close()
 
 	var buf bytes.Buffer
 	_, _ = io.Copy(&buf, r)
-	r.Close()
+	_ = r.Close()
 
 	captured := buf.String()
 	if execErr != nil && captured == "" {
